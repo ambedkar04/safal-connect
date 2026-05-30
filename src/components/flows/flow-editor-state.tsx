@@ -97,6 +97,9 @@ export interface FlowEditorContextValue {
   updateNode: (key: string, patch: Partial<BuilderNode>) => void;
   updateNodeConfig: (key: string, patch: Record<string, unknown>) => void;
   updateNodePosition: (key: string, x: number, y: number) => void;
+  updateNodePositions: (
+    positions: Record<string, { x: number; y: number }>,
+  ) => void;
   removeNode: (key: string) => void;
 
   // Actions
@@ -438,6 +441,25 @@ export function FlowEditorProvider({
     [setState],
   );
 
+  const updateNodePositions = useCallback(
+    (positions: Record<string, { x: number; y: number }>) => {
+      setState((s) => ({
+        ...s,
+        nodes: s.nodes.map((n) => {
+          const next = positions[n.node_key];
+          return next
+            ? {
+                ...n,
+                position_x: Math.round(next.x),
+                position_y: Math.round(next.y),
+              }
+            : n;
+        }),
+      }));
+    },
+    [setState],
+  );
+
   const addNode = useCallback(
     (type: NodeType): string => {
       const meta = NODE_META[type];
@@ -498,6 +520,7 @@ export function FlowEditorProvider({
       updateNode,
       updateNodeConfig,
       updateNodePosition,
+      updateNodePositions,
       removeNode,
       save,
       setStatus,
@@ -518,6 +541,7 @@ export function FlowEditorProvider({
       updateNode,
       updateNodeConfig,
       updateNodePosition,
+      updateNodePositions,
       removeNode,
       save,
       setStatus,
