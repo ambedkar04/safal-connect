@@ -115,7 +115,7 @@ function fmtDate(iso: string): string {
   });
 }
 
-function fmtExpiresIn(iso: string, t: (key: string, values?: Record<string, unknown>) => string): string {
+function fmtExpiresIn(iso: string, t: (key: string, values?: Record<string, string | number>) => string): string {
   const ms = new Date(iso).getTime() - Date.now();
   if (ms <= 0) return t('expired');
   const days = Math.floor(ms / (24 * 60 * 60 * 1000));

@@ -188,7 +188,7 @@ export function TagManager() {
                     <button
                       type="button"
                       onClick={() => confirmDelete(tag)}
-                      aria-label={t('deleteAria', { name: tag.name, bold: (chunks: React.ReactNode) => <strong>{chunks}</strong> })}
+                      aria-label={t('deleteAria', { name: tag.name })}
                       className="ml-0.5 rounded-full p-0.5 opacity-60 transition-opacity hover:bg-black/10 hover:opacity-100 dark:hover:bg-white/10"
                     >
                       <X className="size-3" />
