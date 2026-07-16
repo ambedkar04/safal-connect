@@ -15,7 +15,7 @@
     "createAccount": "Create account"
   },
   "Sidebar": {
-    "title": "CRM Template for WhatsApp",
+    "title": "Safal Connect",
     "dashboard": "Dashboard",
     "inbox": "Inbox",
     "notifications": "Notifications",
@@ -1503,7 +1503,8 @@
       "fields": "Fields & tags",
       "deals": "Deals & currency",
       "members": "Team members",
-      "api": "API keys"
+      "api": "API keys",
+      "quick-replies": "Quick replies"
     },
     "groups": {
       "account": "Account",
@@ -1598,7 +1599,7 @@
       "nameLabel": "Name",
       "namePlaceholder": "e.g. Zapier automation",
       "scopesLabel": "Scopes",
-      "scopesHint": "A key with no scopes can still call <code className=\"text-[11px]\">GET /api/v1/me</code> to verify it works.",
+      "scopesHint": "A key with no scopes can still call <code>GET /api/v1/me</code> to verify it works.",
       "cancel": "Cancel",
       "creating": "Creating…",
       "createKey": "Create key",

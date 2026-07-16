@@ -14,6 +14,7 @@
  */
 
 export const THEME_IDS = [
+  "whatsapp",
   "violet",
   "emerald",
   "cobalt",
@@ -23,7 +24,7 @@ export const THEME_IDS = [
 
 export type ThemeId = (typeof THEME_IDS)[number];
 
-export const DEFAULT_THEME: ThemeId = "violet";
+export const DEFAULT_THEME: ThemeId = "whatsapp";
 
 export const STORAGE_KEY = "wacrm.theme";
 
@@ -67,6 +68,12 @@ export interface ThemeMeta {
 }
 
 export const THEMES: ReadonlyArray<ThemeMeta> = [
+  {
+    id: "whatsapp",
+    name: "WhatsApp",
+    tagline: "Official WhatsApp theme for Safal Connect.",
+    swatch: "oklch(0.52 0.12 158)",
+  },
   {
     id: "violet",
     name: "Violet",
