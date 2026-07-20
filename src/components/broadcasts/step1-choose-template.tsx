@@ -49,6 +49,7 @@ export function Step1ChooseTemplate({ selectedTemplate, onSelect, onNext, onBack
     }
 
     fetchTemplates();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (loading) {

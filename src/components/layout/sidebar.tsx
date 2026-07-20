@@ -4,79 +4,24 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { useAuth } from "@/hooks/use-auth";
+
 import { useTotalUnread } from "@/hooks/use-total-unread";
 import { useUnreadNotifications } from "@/hooks/use-unread-notifications";
+
 import {
   Bell,
   Bot,
-  Crown,
   GitBranch,
   LayoutDashboard,
-  LogOut,
   MessageSquare,
   Radio,
   Settings,
-  Shield,
-  User,
-  UserCog,
   Users,
-  UsersRound,
   Workflow,
   X,
   Zap,
 } from "lucide-react";
-import type { AccountRole } from "@/lib/auth/roles";
 
-// Per-role chip metadata used in the sidebar's account strip + the
-// Members tab roster. Keeping this near both consumers in a single
-// place avoids drift between the two surfaces — when a designer
-// wants to recolour "agent" rows, this is the one diff.
-const ROLE_CHIP: Record<
-  AccountRole,
-  { icon: typeof Crown; labelKey: string; className: string }
-> = {
-  owner: {
-    icon: Crown,
-    labelKey: "roleOwner",
-    // Amber: scarce, immutable, "the boss" — gets visual emphasis.
-    className:
-      "border-amber-500/40 bg-amber-500/10 text-amber-300",
-  },
-  admin: {
-    icon: Shield,
-    labelKey: "roleAdmin",
-    // Primary-tinted: significant but not as scarce as owner.
-    className:
-      "border-primary/40 bg-primary/10 text-primary",
-  },
-  agent: {
-    icon: UserCog,
-    labelKey: "roleAgent",
-    // Neutral slate: the operational default.
-    className:
-      "border-border bg-muted text-foreground",
-  },
-  viewer: {
-    icon: User,
-    labelKey: "roleViewer",
-    // Muted slate: read-only role; visually quieter than agent.
-    className:
-      "border-border bg-card text-muted-foreground",
-  },
-};
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 interface NavItem {
   href: string;
@@ -116,21 +61,8 @@ import { useTranslations } from "next-intl";
 export function Sidebar({ open = false, onClose }: SidebarProps) {
   const t = useTranslations("Sidebar");
   const pathname = usePathname();
-  const { profile, profileLoading, account, accountRole, signOut } = useAuth();
   const totalUnread = useTotalUnread();
   const unreadNotifications = useUnreadNotifications();
-  // Only surface the account-name strip when it actually carries
-  // information. A solo user's personal account is named after them
-  // (the 017 signup trigger seeds it from `full_name`), so showing it
-  // here would just duplicate the user name in the footer below. Once
-  // the account is renamed or the user joins a shared account, the
-  // name diverges and the strip becomes meaningful — that's the signal
-  // we gate on. Wait for the profile fetch to settle first, otherwise
-  // the strip flashes in once the row resolves (a layout jump).
-  const showAccountStrip =
-    !profileLoading &&
-    !!account?.name &&
-    account.name !== profile?.full_name;
 
   // Close the drawer when route changes — users opened it to navigate,
   // so once they pick a destination the drawer should get out of the way.
