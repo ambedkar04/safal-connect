@@ -14,6 +14,7 @@ import {
   DollarSign,
   StickyNote,
   Plus,
+  GraduationCap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -35,6 +36,45 @@ export function ContactSidebar({ contact }: ContactSidebarProps) {
   const [tags, setTags] = useState<(Tag & { contact_tag_id: string })[]>([]);
   const [newNote, setNewNote] = useState("");
   const [addingNote, setAddingNote] = useState(false);
+
+  const [lmsProfile, setLmsProfile] = useState<any>(null);
+  const [lmsLoading, setLmsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!contact?.phone) return;
+    
+    let isMounted = true;
+    const fetchLms = async () => {
+      setLmsLoading(true);
+      const apiUrl = process.env.NEXT_PUBLIC_LMS_API_URL || "http://localhost:8000";
+      const apiKey = process.env.NEXT_PUBLIC_WACRM_API_KEY || "safal-connect-default-secret-key-123";
+      
+      try {
+        const lmsRes = await fetch(`${apiUrl}/api/v1/wacrm/user-lookup`, {
+          method: 'POST',
+          headers: {
+            "x-api-key": apiKey,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ mobile: contact.phone }),
+        });
+        if (lmsRes.ok) {
+          const data = await lmsRes.json();
+          if (isMounted) setLmsProfile(data);
+        } else {
+          if (isMounted) setLmsProfile({ status: "error" });
+        }
+      } catch (err) {
+        console.error("LMS Lookup Error:", err);
+        if (isMounted) setLmsProfile({ status: "error" });
+      } finally {
+        if (isMounted) setLmsLoading(false);
+      }
+    };
+    
+    fetchLms();
+    return () => { isMounted = false; };
+  }, [contact?.phone]);
 
   const fetchContactData = useCallback(async () => {
     if (!contact) return;
@@ -203,6 +243,54 @@ export function ContactSidebar({ contact }: ContactSidebarProps) {
                     {tag.name}
                   </span>
                 ))
+              )}
+            </div>
+          </div>
+
+          {/* Divider */}
+          <div className="my-4 border-t border-border" />
+
+          {/* LMS Profile */}
+          <div>
+            <div className="flex items-center gap-2 px-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              <GraduationCap className="h-3 w-3" />
+              LMS Profile
+            </div>
+            <div className="mt-2 space-y-2">
+              {lmsLoading ? (
+                <p className="px-1 text-xs text-muted-foreground">Loading LMS data...</p>
+              ) : lmsProfile?.status === "registered" ? (
+                <div className="rounded-lg bg-muted px-3 py-2 border-l-4 border-primary">
+                  <p className="text-sm font-medium text-foreground">{lmsProfile.user.name}</p>
+                  {lmsProfile.user.email && (
+                    <p className="text-xs text-muted-foreground">{lmsProfile.user.email}</p>
+                  )}
+                  
+                  {lmsProfile.user.purchases && lmsProfile.user.purchases.length > 0 && (
+                    <div className="mt-2">
+                      <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Purchases</p>
+                      <ul className="mt-1 space-y-1">
+                        {lmsProfile.user.purchases.map((p: any, idx: number) => (
+                          <li key={idx} className="text-xs text-foreground bg-background rounded px-2 py-1 shadow-sm">
+                            <span className="font-medium text-primary capitalize">{p.type}</span>: {p.name}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              ) : lmsProfile?.status === "unregistered" ? (
+                <div className="rounded-lg bg-orange-500/10 px-3 py-3 border border-orange-500/20">
+                  <p className="text-sm font-medium text-orange-600 flex items-center gap-1">
+                    ⚠️ New Lead / Unregistered
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1 mb-2">This user is not registered in the LMS.</p>
+                  <Button size="sm" className="w-full text-xs h-7 bg-orange-600 hover:bg-orange-700 text-white">
+                    Send Registration Link
+                  </Button>
+                </div>
+              ) : (
+                <p className="px-1 text-xs text-muted-foreground">Unable to fetch LMS data.</p>
               )}
             </div>
           </div>
